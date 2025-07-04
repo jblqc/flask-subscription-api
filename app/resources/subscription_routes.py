@@ -5,7 +5,8 @@ from app.models.subscription import Subscription
 from app.models.subscription_plan import SubscriptionPlan
 from app.models.frequency_option import FrequencyOption
 from app.logic.subscription import renew_subscription, cancel_subscription, expire_subscription
-
+from app.models.payment import Payment
+from app.models.users import User
 
 from app.extensions import db
 from app.api_models.subscription_models import subscription_model, subscription_input_model, subscription_per_user_model
@@ -31,7 +32,39 @@ class SubscriptionListAPI(Resource):
         subscription_plan = SubscriptionPlan.query.get(data["subscription_plan_id"])
         option_id = subscription_plan.frequency_option_id
         duration = FrequencyOption.query.get(option_id).duration_days
+        plan_price = subscription_plan.plan_price or 0.0
+        # --- Validate: User can't subscribe to 2 plans of same product
+        existing_sub = (
+            db.session.query(Subscription)
+            .join(SubscriptionPlan, Subscription.subscription_plan_id == SubscriptionPlan.id)
+            .filter(
+                Subscription.user_id == data["user_id"],
+                SubscriptionPlan.product_id == subscription_plan.product_id,
+                Subscription.status.in_(["subscribed"])
+            )
+            .first()
+        )
+
+        if existing_sub:
+            abort(409, message="User is already subscribed to a plan for this product.")
+
         
+        # ---- Step 1: Simulate payment creation (assume success for now)
+        payment = Payment(
+            user_id=data["user_id"],
+            subscription_id=None,  # NO SUBSCRIPTION ID YET
+            # In a real scenario, you would integrate with a payment gateway here
+            payment_method="credit_card",  # placeholder
+            transaction_id=f"transac_{datetime.utcnow().timestamp()}",
+            amount=plan_price,
+            status="success"
+        )
+        db.session.add(payment)
+
+        if payment.status != "success":
+            abort(402, message="Payment failed. Subscription not created.")
+
+        # ---- Step 2: Create the subscription
         subscription = Subscription(
             user_id=data["user_id"],
             subscription_plan_id=data["subscription_plan_id"],
@@ -41,7 +74,12 @@ class SubscriptionListAPI(Resource):
             auto_renew=data.get("auto_renew", False)
         )
         db.session.add(subscription)
+        db.session.flush()
+
+        # ---- Step 3: Update the payment record with the subscription ID
+        payment.subscription_id = subscription.id
         db.session.commit()
+
         return subscription, 201
 
 

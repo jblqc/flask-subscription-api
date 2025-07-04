@@ -4,7 +4,7 @@ from datetime import datetime
 class Payment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    subscription_id = db.Column(db.Integer, db.ForeignKey('subscription.id'), nullable=False)
+    subscription_id = db.Column(db.Integer, db.ForeignKey('subscription.id'))
 
     amount = db.Column(db.Float, nullable=False)
     payment_method = db.Column(db.String(50), nullable=False)

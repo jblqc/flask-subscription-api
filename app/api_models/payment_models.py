@@ -17,5 +17,7 @@ payment_input_model = api.model("PaymentInput", {
     "subscription_id": fields.Integer(required=True),
     "amount": fields.Float(required=True),
     "payment_method": fields.String(required=True),
-    "transaction_id": fields.String(required=False)
+    "transaction_id": fields.String(required=False),
+    "status": fields.String,
+
 })

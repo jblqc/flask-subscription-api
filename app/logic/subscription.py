@@ -4,7 +4,6 @@ from app.models.subscription_plan import SubscriptionPlan
 from app.models.access_continuity import AccessContinuity
 from app.extensions import db
 
-
 def renew_subscription(subscription_id):
     subscription = Subscription.query.get(subscription_id)
     if not subscription:
@@ -14,17 +13,31 @@ def renew_subscription(subscription_id):
     if not plan or not plan.frequency_option:
         return {"error": f"Invalid or missing plan/frequency for subscription ID {subscription_id}"}, 400
 
-    # Determine new end date based on duration
-    duration = timedelta(days=plan.frequency_option.duration_days)
+    # STEP 1 — Simulate Payment First
+    plan_price = plan.plan_price or 0.0
+    payment = Payment(
+        user_id=subscription.user_id,
+        subscription_id=subscription.id,
+        payment_method="credit_card",  # or pull from config/input
+        transaction_id=f"renewal_{datetime.utcnow().timestamp()}",
+        amount=plan_price,
+        status="success"  # simulated
+    )
+    db.session.add(payment)
+
+    if payment.status != "success":
+        db.session.rollback()
+        return {"error": "Payment failed. Subscription not renewed."}, 402
+
+    # STEP 2 — Proceed with renewal
     now = datetime.utcnow()
+    duration = timedelta(days=plan.frequency_option.duration_days)
     new_end_date = now + duration
 
-    # Update subscription
     subscription.end_date = new_end_date
     subscription.renewal_date = now
     subscription.status = "subscribed"
 
-    # Update access continuity if exists
     access = AccessContinuity.query.filter_by(subscription_id=subscription_id).first()
     if access:
         access.expires_at = new_end_date
@@ -36,9 +49,9 @@ def renew_subscription(subscription_id):
         "message": "Subscription successfully renewed",
         "subscription_id": subscription_id,
         "new_end_date": new_end_date.isoformat(),
-        "renewal_date": now.isoformat()
+        "renewal_date": now.isoformat(),
+        "payment_id": payment.id
     }
-
 
 def cancel_subscription(subscription_id):
     subscription = Subscription.query.get(subscription_id)

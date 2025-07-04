@@ -14,8 +14,6 @@ subscription_model = api.model("Subscription", {
 subscription_input_model = api.model("SubscriptionInput", {
     "user_id": fields.Integer(required=True),
     "subscription_plan_id": fields.Integer(required=True),
-    "start_date": fields.DateTime,
-    "end_date": fields.DateTime,
     "auto_renew": fields.Boolean(default=False)
 })
 

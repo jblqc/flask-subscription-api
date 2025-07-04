@@ -36,6 +36,7 @@ class SubscriptionListAPI(Resource):
 
         subscription_plan = SubscriptionPlan(
             name = data["name"],
+            plan_price = data["plan_price"],
             product_id = data["product_id"],
             frequency_option_id = data["frequency_option_id"]
         )
@@ -72,6 +73,7 @@ class SubscriptionAPI(Resource):
 
         subscription_plan.name = data["name"]
         subscription_plan.product_id = data["product_id"]
+        subscription_plan.plan_price = data["plan_price"]
         subscription_plan.frequency_option_id = data["frequency_option_id"]
         db.session.commit()
         return subscription_plan, 200
