@@ -3,7 +3,7 @@ from flask_restx import Resource, Namespace, abort
 from app.models.access_continuity import AccessContinuity
 from app.api_models.access_models import access_continuity_model
 from datetime import datetime
-access = Namespace("Access Continuity", path="/api", description="Access continuity management")
+access = Namespace("Access Continuity", path="/api/v1", description="Access continuity management")
 
 
 @access.route("/access")

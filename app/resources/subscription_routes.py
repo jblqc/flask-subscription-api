@@ -12,8 +12,7 @@ from app.extensions import db
 from app.api_models.subscription_models import subscription_model, subscription_input_model, subscription_per_user_model
 from datetime import datetime, timedelta
 
-sub = Namespace("Subscription", path="/api",
-                description="Subscription management")
+sub = Namespace("Subscription", path="/api/v1",description="Subscription management")
 
 
 @sub.route("/subscriptions")

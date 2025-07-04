@@ -5,7 +5,7 @@ from app.models.frequency_option import FrequencyOption
 from app.extensions import db
 from app.api_models.frequency_models import frequency_option_model, frequency_option_input_model
 
-freq = Namespace("Frequency", path="/api", description="Subscription frequencies")
+freq = Namespace("Frequency", path="/api/v1", description="Subscription frequencies")
 
 @freq.route("/frequencies")
 class FrequencyListAPI(Resource):

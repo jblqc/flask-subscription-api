@@ -5,7 +5,7 @@ from app.models.product import Product
 from app.extensions import db
 from app.api_models.product_models import product_model, product_input_model
 
-prod = Namespace("Product", path="/api", description="Product management")
+prod = Namespace("Product", path="/api/v1", description="Product management")
 
 @prod.route("/products")
 class ProductListAPI(Resource):

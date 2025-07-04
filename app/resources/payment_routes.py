@@ -7,7 +7,7 @@ from app.extensions import db
 from app.api_models.payment_models import payment_model, payment_input_model
 from datetime import datetime
 
-payment = Namespace("Payments", path="/api", description="Payment processing example")
+payment = Namespace("Payments", path="/api/v1", description="Payment processing example")
 
 @payment.route("/payments")
 class PaymentListAPI(Resource):

@@ -7,8 +7,7 @@ from app.models.frequency_option import FrequencyOption
 from app.extensions import db
 from app.api_models.subscription_plan_models import subscription_plan_model, subscription_plan_input_model
 
-subsplan = Namespace("Subscription Plan", path="/api",
-                description="Subscription plan management")
+subsplan = Namespace("Subscription Plan", path="/api/v1", description="Subscription plan management")
 
 
 @subsplan.route("/subscription_plans")

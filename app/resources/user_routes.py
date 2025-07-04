@@ -5,7 +5,7 @@ from app.models.users import User
 from app.extensions import db
 from app.api_models.users_models import user_model, user_input_model
 
-usr = Namespace("User", path="/api", description="User management")
+usr = Namespace("User", path="/api/v1", description="User management")
 
 
 @usr.route("/users")
