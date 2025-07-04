@@ -4,7 +4,7 @@ from flask_restx import Resource, Namespace, abort
 from app.models.subscription import Subscription
 from app.models.subscription_plan import SubscriptionPlan
 from app.models.frequency_option import FrequencyOption
-from app.logic.renew_subscription import renew_subscription, cancel_subscription, expire_subscription
+from app.logic.subscription import renew_subscription, cancel_subscription, expire_subscription
 
 
 from app.extensions import db

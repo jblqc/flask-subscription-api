@@ -15,3 +15,4 @@ class Subscription(db.Model):
     user = db.relationship("User", back_populates="subscriptions")
     subscription_plan = db.relationship("SubscriptionPlan", back_populates="subscriptions")
     access_continuity = db.relationship("AccessContinuity", uselist=False, back_populates="subscription", cascade="all, delete-orphan")
+    payments = db.relationship("Payment", back_populates="subscription")

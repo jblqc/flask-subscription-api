@@ -1,6 +1,6 @@
 from flask import Flask, Blueprint
 from .extensions import api, db, migrate
-from .resources import   freq, usr, sub, access, prod, subsplan
+from .resources import   freq, usr, sub, access, prod, subsplan, payment
 
 def create_app():
     
@@ -25,6 +25,7 @@ def create_app():
     api.add_namespace(prod)
     api.add_namespace(sub)
     api.add_namespace(subsplan)
+    api.add_namespace(payment)
 
 
 
