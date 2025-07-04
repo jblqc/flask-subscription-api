@@ -7,8 +7,7 @@ from app.models.frequency_option import FrequencyOption
 from app.extensions import db
 from app.api_models.subscription_plan_models import subscription_plan_model, subscription_plan_input_model
 
-subsplan = Namespace("Subscription Plan", path="/api",
-                description="Subscription plan management")
+subsplan = Namespace("Subscription Plan", path="/api/v1", description="Subscription plan management")
 
 
 @subsplan.route("/subscription_plans")
@@ -36,6 +35,7 @@ class SubscriptionListAPI(Resource):
 
         subscription_plan = SubscriptionPlan(
             name = data["name"],
+            plan_price = data["plan_price"],
             product_id = data["product_id"],
             frequency_option_id = data["frequency_option_id"]
         )
@@ -72,6 +72,7 @@ class SubscriptionAPI(Resource):
 
         subscription_plan.name = data["name"]
         subscription_plan.product_id = data["product_id"]
+        subscription_plan.plan_price = data["plan_price"]
         subscription_plan.frequency_option_id = data["frequency_option_id"]
         db.session.commit()
         return subscription_plan, 200

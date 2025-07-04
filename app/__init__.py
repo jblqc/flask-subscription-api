@@ -1,6 +1,6 @@
 from flask import Flask, Blueprint
 from .extensions import api, db, migrate
-from .resources import   freq, usr, sub, access, prod, subsplan
+from .resources import   freq, usr, sub, access, prod, subsplan, payment
 
 def create_app():
     
@@ -11,8 +11,9 @@ def create_app():
     migrate.init_app(app, db)
     
     appBlueprint = Blueprint("app", __name__, url_prefix="/swagger")
-    api.init_app(appBlueprint, title="Flask Restx Tutorial",
-                 description="A simple API for a course and students",
+    api.init_app(appBlueprint, title="Subsciption API Activity",
+                 description="A simple API for managing Subscription Plans, Products, Users, and Access Continuity",
+                 version="1.0",
                  validate=True
                  )
     app.register_blueprint(appBlueprint)
@@ -25,6 +26,7 @@ def create_app():
     api.add_namespace(prod)
     api.add_namespace(sub)
     api.add_namespace(subsplan)
+    api.add_namespace(payment)
 
 
 

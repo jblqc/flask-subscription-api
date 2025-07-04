@@ -12,3 +12,4 @@ class User(db.Model):
     # all the subscriptions and access_entries will be deleted
     subscriptions = db.relationship("Subscription", back_populates="user", cascade="all, delete-orphan")
     access_entries = db.relationship("AccessContinuity", back_populates="user", cascade="all, delete-orphan")
+    payments = db.relationship("Payment", back_populates="user")
