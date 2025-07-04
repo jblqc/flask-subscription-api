@@ -62,7 +62,7 @@ class SubscriptionListAPI(Resource):
         db.session.add(payment)
 
         if payment.status != "success":
-            abort(402, message="Payment failed. Subscription not created.")
+            abort(403, message="Payment failed. Subscription not created.")
 
         # ---- Step 2: Create the subscription
         subscription = Subscription(

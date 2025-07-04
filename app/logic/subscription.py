@@ -3,6 +3,7 @@ from app.models.subscription import Subscription
 from app.models.subscription_plan import SubscriptionPlan
 from app.models.access_continuity import AccessContinuity
 from app.extensions import db
+from app.models.payment import Payment
 
 def renew_subscription(subscription_id):
     subscription = Subscription.query.get(subscription_id)
@@ -27,7 +28,7 @@ def renew_subscription(subscription_id):
 
     if payment.status != "success":
         db.session.rollback()
-        return {"error": "Payment failed. Subscription not renewed."}, 402
+        return {"error": "Payment failed. Subscription not renewed."}, 403
 
     # STEP 2 — Proceed with renewal
     now = datetime.utcnow()
