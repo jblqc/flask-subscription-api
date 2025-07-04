@@ -4,6 +4,8 @@ from flask_restx import Resource, Namespace, abort
 from app.models.subscription import Subscription
 from app.models.subscription_plan import SubscriptionPlan
 from app.models.frequency_option import FrequencyOption
+from app.logic.renew_subscription import renew_subscription, cancel_subscription, expire_subscription
+
 
 from app.extensions import db
 from app.api_models.subscription_models import subscription_model, subscription_input_model, subscription_per_user_model
@@ -56,22 +58,30 @@ class SubscriptionAPI(Resource):
     @sub.expect(subscription_input_model)
     @sub.marshal_with(subscription_model)
     def put(self, id):
-    
         subscription = Subscription.query.get(id)
         if not subscription:
             abort(404, message=f"Subscription with ID {id} not found")
 
         data = request.json
+        try:
+            # Convert ISO strings to datetime objects
+            start_date = datetime.fromisoformat(data["start_date"].replace("Z", "+00:00"))
+            end_date = datetime.fromisoformat(data["end_date"].replace("Z", "+00:00"))
+        except Exception as e:
+            abort(400, message=f"Invalid date format: {e}")
 
         subscription.user_id = data["user_id"]
         subscription.subscription_plan_id = data["subscription_plan_id"]
-        subscription.status = data["status"]
-        subscription.start_date = data["start_date"]
-        subscription.end_date = data["end_date"]
-        subscription.renewal_date = data["renewal_date"]
+        subscription.start_date = start_date          
+        subscription.end_date = end_date             
         subscription.auto_renew = data.get("auto_renew", False)
+        if subscription.end_date < datetime.utcnow():
+            subscription.status = "expired"
+        else:
+            subscription.status = "subscribed"
         db.session.commit()
         return subscription, 200
+
 
     def delete(self, id):
         subscription = Subscription.query.get(id)
@@ -82,7 +92,6 @@ class SubscriptionAPI(Resource):
         return {}, 204
 
 @sub.route("/subscriptions/user/<int:user_id>")
-
 class UserSubscriptionsAPI(Resource):
     @sub.marshal_with(subscription_per_user_model)
     def get(self, user_id):
@@ -103,8 +112,8 @@ class UserSubscriptionsAPI(Resource):
                 "user_id": user.id,
                 "username": user.username,
                 "status": sub.status,
-                "start_date": sub.start_date.isoformat(),
-                "end_date": sub.end_date.isoformat(),
+                "start_date": sub.start_date,  
+                "end_date": sub.end_date,      
                 "auto_renew": sub.auto_renew,
                 "product_name": product.name if product else None,
                 "plan_name": plan.name if plan else None,
@@ -112,3 +121,21 @@ class UserSubscriptionsAPI(Resource):
             })
 
         return result, 200
+    
+    
+
+@sub.route("/subscriptions/<int:id>/renew")
+class SubscriptionRenewalAPI(Resource):
+    def post(self, id):
+        return renew_subscription(id)
+    
+@sub.route("/subscriptions/<int:id>/cancel")
+class SubscriptionCancelAPI(Resource):
+    def post(self, id):
+        return cancel_subscription(id)
+
+
+@sub.route("/subscriptions/<int:id>/expire")
+class SubscriptionExpireAPI(Resource):
+    def post(self, id):
+        return expire_subscription(id)
