@@ -7,7 +7,7 @@ access_continuity_model = api.model("AccessContinuity", {
     "product_id": fields.Integer,
     "subscription_id": fields.Integer,
     "has_access": fields.Boolean,
-    "expires_at": fields.DateTime
+    "expires_at": fields.Date
 })
 
 access_continuity_input_model = api.model("AccessContinuityInput", {
@@ -15,5 +15,5 @@ access_continuity_input_model = api.model("AccessContinuityInput", {
     "product_id": fields.Integer(required=True),
     "subscription_id": fields.Integer,
     "has_access": fields.Boolean(required=True),
-    "expires_at": fields.DateTime(required=True)
+    "expires_at": fields.Date(required=True)
 })

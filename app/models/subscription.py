@@ -8,7 +8,7 @@ class Subscription(db.Model):
     status = db.Column(db.String(20), nullable=False)
     start_date = db.Column(db.DateTime, nullable=False)
     end_date = db.Column(db.DateTime, nullable=False)
-    renewal_date = db.Column(db.DateTime, nullable=False)
+    renewal_date = db.Column(db.DateTime, nullable=True)
     auto_renew = db.Column(db.Boolean, default=False)
 
     # Relationships
