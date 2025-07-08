@@ -33,6 +33,8 @@ class SubscriptionListAPI(Resource):
         duration = FrequencyOption.query.get(option_id).duration_days
         plan_price = subscription_plan.plan_price or 0.0
         # --- Validate: User can't subscribe to 2 plans of same product
+        # Get all the subscription plans for the product for a user
+        # Only get the Subscription plan based on the input id
         existing_sub = (
             db.session.query(Subscription)
             .join(SubscriptionPlan, Subscription.subscription_plan_id == SubscriptionPlan.id)
@@ -51,7 +53,7 @@ class SubscriptionListAPI(Resource):
         # ---- Step 1: Simulate payment creation (assume success for now)
         payment = Payment(
             user_id=data["user_id"],
-            subscription_id=None,  # NO SUBSCRIPTION ID YET
+            subscription_id=None,  # NO SUBSCRIPTION ID YET, subscription id will only generate upon succesfull subscription creation
             # In a real scenario, you would integrate with a payment gateway here
             payment_method="credit_card",  # placeholder
             transaction_id=f"transac_{datetime.utcnow().timestamp()}",

@@ -3,6 +3,8 @@ from flask_restx import Resource, Namespace, abort
 from app.models.access_continuity import AccessContinuity
 from app.api_models.access_models import access_continuity_model
 from datetime import datetime
+from app.models.subscription import Subscription
+
 access = Namespace("Access Continuity", path="/api/v1", description="Access continuity management")
 
 
@@ -17,7 +19,6 @@ class AccessListAPI(Resource):
         user_id = request.args.get("user_id", type=int)
         product_id = request.args.get("product_id", type=int)
 
-        from app.models.subscription import Subscription
 
         results = []
         subscriptions = Subscription.query.all()
@@ -34,7 +35,7 @@ class AccessListAPI(Resource):
             if product_id and product.id != product_id:
                 continue
             #check access continuity 
-            has_access = sub.status.lower() == "subscribed" and sub.end_date > datetime.utcnow()
+            has_access = sub.status.lower() == "subscribed" and sub.end_date > datetime.now()
 
             results.append({
                 "user_id": user.id,

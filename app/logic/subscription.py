@@ -12,7 +12,7 @@ def renew_subscription(subscription_id):
 
     plan = SubscriptionPlan.query.get(subscription.subscription_plan_id)
     if not plan or not plan.frequency_option:
-        return {"error": f"Invalid or missing plan/frequency for subscription ID {subscription_id}"}, 400
+        return {"error": f"Invalid or missing plan for subscription ID {subscription_id}"}, 400
 
     # STEP 1 — Simulate Payment First
     plan_price = plan.plan_price or 0.0
